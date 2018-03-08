@@ -6,7 +6,7 @@ function resolve (dir) {
 }
 module.exports = {
     entry: {
-        app: __dirname+'/libs/index.js'
+        app: __dirname+'/index.js'
     },
     output: {
         path: __dirname + "/build",
