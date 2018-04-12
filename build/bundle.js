@@ -402,7 +402,7 @@ MtvCore.keyController = {
     this.vm.onEvtHome();
   },
   onArrowItem: function onArrowItem(keyName) {
-    this.vm.onArrowItem(keyName);
+    return this.vm.onArrowItem(keyName);
   },
   onChangeItem: function onChangeItem(keyName) {
     this.vm.onChangeItem(keyName);

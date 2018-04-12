@@ -328,7 +328,7 @@ MtvCore.keyController = {
     this.vm.onEvtHome();
   },
   onArrowItem(keyName) {
-    this.vm.onArrowItem(keyName);
+    return this.vm.onArrowItem(keyName);
   },
   onChangeItem(keyName) {
     this.vm.onChangeItem(keyName);
