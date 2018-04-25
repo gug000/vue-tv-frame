@@ -1370,7 +1370,7 @@ var Common = {
         data: _data,
         // type of data we are expecting in return:
         dataType: 'json',
-        timeout: 3000,
+        timeout: config.time || 3000,
         success: function success(data) {
           // console.log(data)
           console.log('request url ' + config.url + ' success');
