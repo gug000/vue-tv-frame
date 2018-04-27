@@ -68,12 +68,13 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export MtvCore */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return keyController; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MtvCore; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return keyController; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Common__ = __webpack_require__(1);
 
 
 var MtvCore = {
+    vm: null,
     CurrentPage: {},
     CurrentZone: {},
     PrevPage: {},
@@ -136,6 +137,9 @@ var MtvCore = {
         this.Items.push(this.Item[itemId]);
         return this.Item[itemId];
     },
+    boundVM: function boundVM(vueEntity) {
+        this.vm = vueEntity;
+    },
     initZone: function initZone(pageConfig) {
         var that = this;
 
@@ -161,6 +165,17 @@ var MtvCore = {
         for (var config in pageConfig) {
             _loop(config);
         }
+    },
+
+    /**
+     * Android执行的异步回调
+     * @param event_type
+     * @param value
+     */
+    execCommonEvent: function execCommonEvent(event_type, value) {
+        if (this.vm) {
+            this.vm.execCommonEvent(event_type, value);
+        }
     }
 };
 MtvCore.keyController = {
@@ -175,9 +190,6 @@ MtvCore.keyController = {
         Enter: 'Enter',
         Alt: 'Alt',
         Home: 'Home'
-    },
-    boundVM: function boundVM(vueEntity) {
-        this.vm = vueEntity;
     },
     keyPress: function keyPress(keyName) {
         if (this.Loading) {
@@ -207,14 +219,14 @@ MtvCore.keyController = {
      * @param currentIndex 设置目标zone选中Item的index （可选）
      */
     changePage: function changePage(pageId, zoomId, pageHide, currentIndex) {
-        if (!this.vm) {
+        if (!this.$core.vm) {
             throw new Error('vue entity is not bounded');
         }
         this.$core.CurrentPage.currentZoneId = this.$core.CurrentZone.id;
         if (this.$core.Page[pageId]) {
             this.$core.PrevPage = this.$core.CurrentPage;
             if (pageHide) {
-                this.vm.setPageShowHide(this.$core.PrevPage.id, false);
+                this.$core.vm.setPageShowHide(this.$core.PrevPage.id, false);
             }
             this.$core.CurrentPage = this.$core.Page[pageId];
             if (zoomId && this.$core.Page[pageId].Zone[zoomId]) {
@@ -224,22 +236,22 @@ MtvCore.keyController = {
                 if (currentIndex !== undefined) {
                     this.$core.CurrentZone.index = currentIndex;
                 }
-                this.vm.setPageShowHide(pageId, true);
+                this.$core.vm.setPageShowHide(pageId, true);
             } else if (this.$core.CurrentPage.currentZoneId) {
                 this.$core.PrevZone = this.$core.CurrentZone;
                 this.$core.CurrentZone = this.$core.Page[pageId].Zone[this.$core.CurrentPage.currentZoneId];
                 if (currentIndex !== undefined) {
                     this.$core.CurrentZone.index = currentIndex;
                 }
-                this.vm.setPageShowHide(pageId, true);
+                this.$core.vm.setPageShowHide(pageId, true);
             } else {
                 this.$core.PrevZone = this.$core.CurrentZone;
-                this.$core.CurrentZone = this.$core.Page[pageId].Zone[this.vm.pages[pageId].zone_ids[0]];
-                this.$core.CurrentPage.currentZoneId = this.vm.pages[pageId].zone_ids[0];
+                this.$core.CurrentZone = this.$core.Page[pageId].Zone[this.$core.vm.pages[pageId].zone_ids[0]];
+                this.$core.CurrentPage.currentZoneId = this.$core.vm.pages[pageId].zone_ids[0];
                 if (currentIndex !== undefined) {
                     this.$core.CurrentZone.index = currentIndex;
                 }
-                this.vm.setPageShowHide(pageId, true);
+                this.$core.vm.setPageShowHide(pageId, true);
             }
         } else {
             throw new Error('change page error, the destination page is not register in MtvCore!');
@@ -253,15 +265,15 @@ MtvCore.keyController = {
      * @param currentIndex 设置目标zone选中的Item的index （可选）
      */
     returnPage: function returnPage(pageHide, zoomId, currentIndex) {
-        if (!this.vm) {
+        if (!this.$core.vm) {
             throw new Error('vue entity is not bounded');
         }
         if (this.$core.PrevPage) {
             if (pageHide) {
-                this.vm.setPageShowHide(this.$core.CurrentPage.id, false);
+                this.$core.vm.setPageShowHide(this.$core.CurrentPage.id, false);
             }
             this.$core.CurrentPage = this.$core.PrevPage;
-            this.vm.setPageShowHide(this.$core.CurrentPage.id, true);
+            this.$core.vm.setPageShowHide(this.$core.CurrentPage.id, true);
             if (zoomId && this.$core.CurrentPage.Zone[zoomId]) {
                 this.$core.CurrentPage.currentZoneId = zoomId;
                 this.$core.CurrentZone = this.$core.CurrentPage.Zone[zoomId];
@@ -282,8 +294,8 @@ MtvCore.keyController = {
                             this.$core.CurrentZone.index = currentIndex;
                         }
                     } else {
-                        this.$core.CurrentZone = this.$core.CurrentPage.Zone[this.vm.pages[this.$core.CurrentPage.id].zone_ids[0]];
-                        this.$core.CurrentPage.currentZoneId = this.vm.pages[this.$core.CurrentPage.id].zone_ids[0];
+                        this.$core.CurrentZone = this.$core.CurrentPage.Zone[this.$core.vm.pages[this.$core.CurrentPage.id].zone_ids[0]];
+                        this.$core.CurrentPage.currentZoneId = this.$core.vm.pages[this.$core.CurrentPage.id].zone_ids[0];
                         if (currentIndex !== undefined) {
                             this.$core.CurrentZone.index = currentIndex;
                         }
@@ -399,25 +411,25 @@ MtvCore.keyController = {
         }
     },
     evtEnter: function evtEnter() {
-        this.vm.onEvtEnter();
+        this.$core.vm.onEvtEnter();
     },
     evtAlt: function evtAlt() {
-        this.vm.onEvtAlt();
+        this.$core.vm.onEvtAlt();
     },
     evtHome: function evtHome() {
-        this.vm.onEvtHome();
+        this.$core.vm.onEvtHome();
     },
     onArrowItem: function onArrowItem(keyName) {
-        return this.vm.onArrowItem(keyName);
+        return this.$core.vm.onArrowItem(keyName);
     },
     onChangeItem: function onChangeItem(keyName) {
-        this.vm.onChangeItem(keyName);
+        this.$core.vm.onChangeItem(keyName);
     },
     onScrollItem: function onScrollItem(keyName) {
-        this.vm.onScrollItem(keyName);
+        this.$core.vm.onScrollItem(keyName);
     },
     onChangeZone: function onChangeZone(keyName) {
-        this.vm.onChangeZone(keyName);
+        this.$core.vm.onChangeZone(keyName);
     }
 };
 
@@ -425,7 +437,7 @@ var keyController = MtvCore.keyController;
 window.MtvCore = MtvCore;
 
 
-/* harmony default export */ __webpack_exports__["a"] = (MtvCore);
+/* harmony default export */ __webpack_exports__["b"] = (MtvCore);
 
 /***/ }),
 /* 1 */
@@ -1710,7 +1722,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 exports.common = __WEBPACK_IMPORTED_MODULE_1__libs_Common__["a" /* default */]
-exports.MtvCore = __WEBPACK_IMPORTED_MODULE_2__libs_MtvCore__["a" /* default */]
+exports.MtvCore = __WEBPACK_IMPORTED_MODULE_2__libs_MtvCore__["b" /* default */]
 
 /***/ }),
 /* 3 */
@@ -1719,59 +1731,115 @@ exports.MtvCore = __WEBPACK_IMPORTED_MODULE_2__libs_MtvCore__["a" /* default */]
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MtvCore__ = __webpack_require__(0);
 
-var Interface = {
-  dispatchKeyEvent: function dispatchKeyEvent(event_type) {
-    event_type = parseInt(event_type, 10);
-    switch (event_type) {
-      case 1:
-        __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Left);
-        break;
-      case 2:
-        __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Up);
-        break;
-      case 3:
-        __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Right);
-        break;
-      case 4:
-        __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Down);
-        break;
-      case 5:
-        __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Enter);
-        break;
-      case 6:
-        __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Alt);
-        break;
-    };
-    console.log('dispatchKeyEvent:' + event_type);
-  },
-  init: function init() {
-    window.dispatchKeyEvent = this.dispatchKeyEvent;
-    document.onkeydown = function (evt) {
-      var KeyName = {
-        19: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Up,
-        38: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Up, //Keyboard
-        20: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Down,
-        40: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Down, //Keyboard
-        21: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Left,
-        37: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Left, //Keyboard
-        22: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Right,
-        39: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Right, //Keyboard
-        23: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Enter,
-        13: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Enter, //Keyboard
-        4: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Alt,
-        18: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Alt, //Keyboard Alt键
-        27: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Alt, //Keyboard ESC
-        24: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Alt, //Keyboard ESC
-        66: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Enter,
-        111: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].KeyName.Alt
 
-      };
-      evt = evt || window.event;
-      var KeyCode = evt.which || evt.keyCode;
-      __WEBPACK_IMPORTED_MODULE_0__MtvCore__["b" /* keyController */].keyPress(KeyName[KeyCode]);
-      return true;
-    };
-  }
+var Interface = {
+    dispatchKeyEvent: function dispatchKeyEvent(event_type) {
+        event_type = parseInt(event_type, 10);
+        switch (event_type) {
+            case 1:
+                __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Left);
+                break;
+            case 2:
+                __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Up);
+                break;
+            case 3:
+                __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Right);
+                break;
+            case 4:
+                __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Down);
+                break;
+            case 5:
+                __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Enter);
+                break;
+            case 6:
+                __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].keyPress(__WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Alt);
+                break;
+        }
+        console.log('android dispatchKeyEvent:' + event_type);
+    },
+
+    /**
+     * Android执行的异步回调
+     * @param event_type
+     * @param value
+     */
+    execCommonEvent: function execCommonEvent(event_type, value) {
+        // event_type = parseInt(event_type, 10);
+        // value = JSON.stringify(value);
+        __WEBPACK_IMPORTED_MODULE_0__MtvCore__["a" /* MtvCore */].execCommonEvent(event_type, value);
+        console.log('android execCommonEvent:' + event_type + '-----' + value);
+        // switch (event_type) {
+        //     case 1001:
+        //         /* 登录的异步回调 */
+        //         //{status:200,accountid:"",phone:""}
+        //         break;
+        //     case 1002:
+        //         /* 兑换的异步回调 */
+        //         //{status:200}
+        //         break;
+        //     case 1003:
+        //         /* 视频播放全屏变小窗异步回调 */
+        //         // value = JSON.parse(value);
+        //         // if (value.status == 200 && value.hasPlayed && !value.isFull) {
+        //             // common.android.playController.stop();
+        //             // var value = common.android.getCommonInfo(common.android.type.COMMONEVENT_VIDEO_MESSAGE);
+        //             // $('#win_callback').html(value)
+        //         // } else {
+        //             // var value= '没有起播';
+        //         // }
+        //         break;
+        //     case 1004:
+        //         /* 跳转会员中心异步回调  -- 返回H5时 会重新加载页面 光标需要手动聚焦（单独处理） -- */
+        //
+        //         break;
+        //     case 1005:
+        //         /* 跳转商品购买异步回调  */
+        //         break;
+        //     case 1006:
+        //         /* webview加载完成异步回调  */
+        //         break;
+        //     case 1007:
+        //         /* 视频播放结束后异步回调 */
+        //         // $('#video_callback').html(value)
+        //         break;
+        //     case 1008:
+        //         /* 音频播放结束后异步回调 */
+        //         // $('#audio_callback').html(value)
+        //         break;
+        //     case 12:
+        //         // $('#upgrade').html(value)
+        //         break;
+        // }
+    },
+    init: function init() {
+        window.dispatchKeyEvent = this.dispatchKeyEvent;
+        window.execCommonEvent = this.execCommonEvent;
+        document.onkeydown = function (evt) {
+            var KeyName = {
+                19: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Up,
+                38: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Up, //Keyboard
+                20: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Down,
+                40: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Down, //Keyboard
+                21: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Left,
+                37: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Left, //Keyboard
+                22: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Right,
+                39: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Right, //Keyboard
+                23: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Enter,
+                13: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Enter, //Keyboard
+                4: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Alt,
+                18: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Alt, //Keyboard Alt键
+                27: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Alt, //Keyboard ESC
+                24: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Alt, //Keyboard ESC
+                66: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Enter,
+                111: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Alt
+
+            };
+            evt = evt || window.event;
+            var KeyCode = evt.which || evt.keyCode;
+            __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].keyPress(KeyName[KeyCode]);
+            return true;
+        };
+    }
 };
 Interface.init();
 /* unused harmony default export */ var _unused_webpack_default_export = (Interface);

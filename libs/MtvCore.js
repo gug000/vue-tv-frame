@@ -1,6 +1,7 @@
 import Common from './Common';
 
 let MtvCore = {
+    vm:null,
     CurrentPage: {},
     CurrentZone: {},
     PrevPage: {},
@@ -61,6 +62,9 @@ let MtvCore = {
         this.Items.push(this.Item[itemId]);
         return this.Item[itemId];
     },
+    boundVM(vueEntity) {
+        this.vm = vueEntity;
+    },
     initZone(pageConfig) {
         let that = this;
         for (let config in pageConfig) {
@@ -81,8 +85,16 @@ let MtvCore = {
                 }
             })
         }
-
-
+    },
+    /**
+     * Android执行的异步回调
+     * @param event_type
+     * @param value
+     */
+    execCommonEvent(event_type, value){
+        if(this.vm){
+            this.vm.execCommonEvent(event_type, value)
+        }
     }
 
 
@@ -99,9 +111,6 @@ MtvCore.keyController = {
         Enter: 'Enter',
         Alt: 'Alt',
         Home: 'Home'
-    },
-    boundVM(vueEntity) {
-        this.vm = vueEntity;
     },
     keyPress(keyName) {
         if (this.Loading) {
@@ -130,14 +139,14 @@ MtvCore.keyController = {
      * @param currentIndex 设置目标zone选中Item的index （可选）
      */
     changePage(pageId, zoomId, pageHide, currentIndex) {
-        if (!this.vm) {
+        if (!this.$core.vm) {
             throw new Error('vue entity is not bounded')
         }
         this.$core.CurrentPage.currentZoneId = this.$core.CurrentZone.id;
         if (this.$core.Page[pageId]) {
             this.$core.PrevPage = this.$core.CurrentPage;
             if (pageHide) {
-                this.vm.setPageShowHide(this.$core.PrevPage.id, false);
+                this.$core.vm.setPageShowHide(this.$core.PrevPage.id, false);
             }
             this.$core.CurrentPage = this.$core.Page[pageId];
             if (zoomId && this.$core.Page[pageId].Zone[zoomId]) {
@@ -147,22 +156,22 @@ MtvCore.keyController = {
                 if (currentIndex !== undefined) {
                     this.$core.CurrentZone.index = currentIndex
                 }
-                this.vm.setPageShowHide(pageId, true);
+                this.$core.vm.setPageShowHide(pageId, true);
             } else if (this.$core.CurrentPage.currentZoneId) {
                 this.$core.PrevZone = this.$core.CurrentZone;
                 this.$core.CurrentZone = this.$core.Page[pageId].Zone[this.$core.CurrentPage.currentZoneId];
                 if (currentIndex !== undefined) {
                     this.$core.CurrentZone.index = currentIndex
                 }
-                this.vm.setPageShowHide(pageId, true);
+                this.$core.vm.setPageShowHide(pageId, true);
             } else {
                 this.$core.PrevZone = this.$core.CurrentZone;
-                this.$core.CurrentZone = this.$core.Page[pageId].Zone[this.vm.pages[pageId].zone_ids[0]];
-                this.$core.CurrentPage.currentZoneId = this.vm.pages[pageId].zone_ids[0];
+                this.$core.CurrentZone = this.$core.Page[pageId].Zone[this.$core.vm.pages[pageId].zone_ids[0]];
+                this.$core.CurrentPage.currentZoneId = this.$core.vm.pages[pageId].zone_ids[0];
                 if (currentIndex !== undefined) {
                     this.$core.CurrentZone.index = currentIndex
                 }
-                this.vm.setPageShowHide(pageId, true);
+                this.$core.vm.setPageShowHide(pageId, true);
             }
         } else {
             throw new Error('change page error, the destination page is not register in MtvCore!');
@@ -176,15 +185,15 @@ MtvCore.keyController = {
      * @param currentIndex 设置目标zone选中的Item的index （可选）
      */
     returnPage(pageHide, zoomId, currentIndex) {
-        if (!this.vm) {
+        if (!this.$core.vm) {
             throw new Error('vue entity is not bounded')
         }
         if (this.$core.PrevPage) {
             if (pageHide) {
-                this.vm.setPageShowHide(this.$core.CurrentPage.id, false);
+                this.$core.vm.setPageShowHide(this.$core.CurrentPage.id, false);
             }
             this.$core.CurrentPage = this.$core.PrevPage;
-            this.vm.setPageShowHide(this.$core.CurrentPage.id, true);
+            this.$core.vm.setPageShowHide(this.$core.CurrentPage.id, true);
             if (zoomId && this.$core.CurrentPage.Zone[zoomId]) {
                 this.$core.CurrentPage.currentZoneId = zoomId;
                 this.$core.CurrentZone = this.$core.CurrentPage.Zone[zoomId];
@@ -205,8 +214,8 @@ MtvCore.keyController = {
                             this.$core.CurrentZone.index = currentIndex;
                         }
                     } else {
-                        this.$core.CurrentZone = this.$core.CurrentPage.Zone[this.vm.pages[this.$core.CurrentPage.id].zone_ids[0]];
-                        this.$core.CurrentPage.currentZoneId = this.vm.pages[this.$core.CurrentPage.id].zone_ids[0];
+                        this.$core.CurrentZone = this.$core.CurrentPage.Zone[this.$core.vm.pages[this.$core.CurrentPage.id].zone_ids[0]];
+                        this.$core.CurrentPage.currentZoneId = this.$core.vm.pages[this.$core.CurrentPage.id].zone_ids[0];
                         if (currentIndex !== undefined) {
                             this.$core.CurrentZone.index = currentIndex;
                         }
@@ -325,25 +334,25 @@ MtvCore.keyController = {
 
     },
     evtEnter() {
-        this.vm.onEvtEnter();
+        this.$core.vm.onEvtEnter();
     },
     evtAlt() {
-        this.vm.onEvtAlt();
+        this.$core.vm.onEvtAlt();
     },
     evtHome() {
-        this.vm.onEvtHome();
+        this.$core.vm.onEvtHome();
     },
     onArrowItem(keyName) {
-        return this.vm.onArrowItem(keyName);
+        return this.$core.vm.onArrowItem(keyName);
     },
     onChangeItem(keyName) {
-        this.vm.onChangeItem(keyName);
+        this.$core.vm.onChangeItem(keyName);
     },
     onScrollItem(keyName) {
-        this.vm.onScrollItem(keyName);
+        this.$core.vm.onScrollItem(keyName);
     },
     onChangeZone(keyName) {
-        this.vm.onChangeZone(keyName);
+        this.$core.vm.onChangeZone(keyName);
     }
 
 };
