@@ -391,7 +391,7 @@ MtvCore.keyController = {
             function ChangeZone() {
                 that.$core.PrevPage = CurrentPage;
                 that.$core.PrevZone = CurrentZone;
-                CurrentZone = CurrentPage.Zone[Border];
+                that.$core.CurrentZone = CurrentZone = CurrentPage.Zone[Border];
                 that.$core.Page[CurrentPage.id].Zone[CurrentZone.id].index = that.$core.Page[CurrentPage.id].Zone[CurrentZone.id].index || 0;
                 that.$core.Page[CurrentPage.id].currentZoneId = CurrentZone.id;
                 //执行用户定义函数
