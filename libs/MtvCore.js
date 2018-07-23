@@ -7,6 +7,7 @@ let MtvCore = {
     PrevPage: {},
     PrevZone: {},
     Page: {},
+    ReturnPage:[],
     createPage(pageId) {
         const Page = function (pageId) {
             return {
@@ -140,38 +141,39 @@ MtvCore.keyController = {
      */
     changePage(pageId, zoomId, pageHide, currentIndex) {
         if (!this.$core.vm) {
-            throw new Error('vue entity is not bounded')
+            throw new Error('change page error, vue entity is not bounded');
+            return;
         }
         this.$core.CurrentPage.currentZoneId = this.$core.CurrentZone.id;
         if (this.$core.Page[pageId]) {
+            this.$core.ReturnPage.push(this.$core.CurrentPage);
+            const prePageId = this.$core.CurrentPage.id;
             this.$core.PrevPage = this.$core.CurrentPage;
-            if (pageHide) {
-                this.$core.vm.setPageShowHide(this.$core.PrevPage.id, false);
-            }
+            this.$core.PrevZone = this.$core.CurrentZone;
             this.$core.CurrentPage = this.$core.Page[pageId];
             if (zoomId && this.$core.Page[pageId].Zone[zoomId]) {
                 this.$core.CurrentPage.currentZoneId = zoomId;
-                this.$core.PrevZone = this.$core.CurrentZone;
                 this.$core.CurrentZone = this.$core.Page[pageId].Zone[zoomId];
                 if (currentIndex !== undefined) {
                     this.$core.CurrentZone.index = currentIndex
                 }
                 this.$core.vm.setPageShowHide(pageId, true);
             } else if (this.$core.CurrentPage.currentZoneId) {
-                this.$core.PrevZone = this.$core.CurrentZone;
                 this.$core.CurrentZone = this.$core.Page[pageId].Zone[this.$core.CurrentPage.currentZoneId];
                 if (currentIndex !== undefined) {
                     this.$core.CurrentZone.index = currentIndex
                 }
                 this.$core.vm.setPageShowHide(pageId, true);
             } else {
-                this.$core.PrevZone = this.$core.CurrentZone;
                 this.$core.CurrentZone = this.$core.Page[pageId].Zone[this.$core.vm.pages[pageId].zone_ids[0]];
                 this.$core.CurrentPage.currentZoneId = this.$core.vm.pages[pageId].zone_ids[0];
                 if (currentIndex !== undefined) {
                     this.$core.CurrentZone.index = currentIndex
                 }
                 this.$core.vm.setPageShowHide(pageId, true);
+            }
+            if (pageHide) {
+                this.$core.vm.setPageShowHide(prePageId, false);
             }
         } else {
             throw new Error('change page error, the destination page is not register in MtvCore!');
@@ -186,46 +188,55 @@ MtvCore.keyController = {
      */
     returnPage(pageHide, zoomId, currentIndex) {
         if (!this.$core.vm) {
-            throw new Error('vue entity is not bounded')
+            throw new Error('return page error, vue entity is not bounded');
+            return;
         }
-        if (this.$core.PrevPage) {
+        if(!this.$core.ReturnPage.length){
+            console.warn('The ReturnPage array is empty,do nothing!');
+            return;
+        }else{
+            const prevPage = this.$core.ReturnPage.pop();
+            this.$core.PrevPage = prevPage;
+            this.$core.PrevZone = this.$core.CurrentZone;
             if (pageHide) {
                 this.$core.vm.setPageShowHide(this.$core.CurrentPage.id, false);
             }
-            this.$core.CurrentPage = this.$core.PrevPage;
+            this.$core.CurrentPage = prevPage;
             this.$core.vm.setPageShowHide(this.$core.CurrentPage.id, true);
-            if (zoomId && this.$core.CurrentPage.Zone[zoomId]) {
+            if(!zoomId){
+                zoomId = this.$core.CurrentPage.currentZoneId;
+            }
+            if(this.$core.CurrentPage.Zone[zoomId]){
                 this.$core.CurrentPage.currentZoneId = zoomId;
                 this.$core.CurrentZone = this.$core.CurrentPage.Zone[zoomId];
                 if (currentIndex !== undefined) {
                     this.$core.CurrentZone.index = currentIndex;
                 }
-            } else {
-                if (this.$core.PrevZone) {
-                    this.$core.CurrentZone = this.$core.PrevZone;
-                    this.$core.CurrentPage.currentZoneId = this.$core.CurrentZone.id;
-                    if (currentIndex !== undefined) {
-                        this.$core.CurrentZone.index = currentIndex;
-                    }
-                } else {
-                    if (this.$core.CurrentPage.currentZoneId) {
-                        this.$core.CurrentZone = this.$core.CurrentPage.Zone[this.$core.CurrentPage.currentZoneId];
-                        if (currentIndex !== undefined) {
-                            this.$core.CurrentZone.index = currentIndex;
-                        }
-                    } else {
-                        this.$core.CurrentZone = this.$core.CurrentPage.Zone[this.$core.vm.pages[this.$core.CurrentPage.id].zone_ids[0]];
-                        this.$core.CurrentPage.currentZoneId = this.$core.vm.pages[this.$core.CurrentPage.id].zone_ids[0];
-                        if (currentIndex !== undefined) {
-                            this.$core.CurrentZone.index = currentIndex;
-                        }
-                    }
-                }
+            }else{
+                throw new Error('return page error, the destination zone is not register in MtvCore!')
             }
-        } else {
-            throw new Error('return page error, the PrevPage is undefined!');
         }
-
+    },
+    /**
+     * 切换Zone
+     * @param zoomId 指定zone为CurrentZone （可选）
+     * @param currentIndex 设置目标zone选中的Item的index （可选）
+     */
+    changeZone(zoomId,currentIndex){
+        if(!zoomId){
+            console.warn('The zoomId is empty, change zone do nothing!');
+            return;
+        }
+        this.$core.PrevZone = this.$core.CurrentZone;
+        if(this.$core.CurrentPage.Zone[zoomId]){
+            this.$core.CurrentPage.currentZoneId = zoomId;
+            this.$core.CurrentZone = this.$core.CurrentPage.Zone[zoomId];
+            if (currentIndex !== undefined) {
+                this.$core.CurrentZone.index = currentIndex;
+            }
+        }else{
+            throw new Error('change zone error, the destination zone is not register in MtvCore!')
+        }
     },
     evtArrow(keyName) {
         let that = this;
@@ -310,7 +321,6 @@ MtvCore.keyController = {
             }
 
             function ChangeZone() {
-                that.$core.PrevPage = CurrentPage;
                 that.$core.PrevZone = CurrentZone;
                 that.$core.CurrentZone = CurrentZone = CurrentPage.Zone[Border];
                 that.$core.Page[CurrentPage.id].Zone[CurrentZone.id].index = that.$core.Page[CurrentPage.id].Zone[CurrentZone.id].index || 0;
