@@ -947,7 +947,7 @@ const Common = {
             var that = this;
             $.ajax({
                 type: method,
-                url: config.cache?config.url:(config.url.indexOf('?')>-1?config.url+'&_T='+new Date().getTime()+that.utils.uuid(8): config.url+'?_T='+new Date().getTime()+that.utils.uuid(8)),
+                url: config.cache?config.url:(config.url.indexOf('?')>-1?config.url+'&_T='+new Date().getTime()+that.uuid(8): config.url+'?_T='+new Date().getTime()+that.uuid(8)),
                 // data to be added to query string:
                 data: _data,
                 // type of data we are expecting in return:
@@ -979,7 +979,7 @@ const Common = {
             })
         },
         promiseRequest(config, data) {
-            var that = this;
+            var that = Common;
             return new Promise((resolve, reject) => {
                 try {
                     that.utils.request(config, data, res => {

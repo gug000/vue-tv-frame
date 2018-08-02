@@ -300,7 +300,7 @@ MtvCore.keyController = {
 
     /**
      * 切换Zone
-     * @param zoomId 指定zone为CurrentZone （可选）
+     * @param zoomId 指定zone为CurrentZone （必选）
      * @param currentIndex 设置目标zone选中的Item的index （可选）
      */
     changeZone: function changeZone(zoomId, currentIndex) {
@@ -1402,7 +1402,7 @@ var Common = {
             var that = this;
             $.ajax({
                 type: method,
-                url: config.cache ? config.url : config.url.indexOf('?') > -1 ? config.url + '&_T=' + new Date().getTime() + that.utils.uuid(8) : config.url + '?_T=' + new Date().getTime() + that.utils.uuid(8),
+                url: config.cache ? config.url : config.url.indexOf('?') > -1 ? config.url + '&_T=' + new Date().getTime() + that.uuid(8) : config.url + '?_T=' + new Date().getTime() + that.uuid(8),
                 // data to be added to query string:
                 data: _data,
                 // type of data we are expecting in return:
@@ -1433,7 +1433,7 @@ var Common = {
             });
         },
         promiseRequest: function promiseRequest(config, data) {
-            var that = this;
+            var that = Common;
             return new Promise(function (resolve, reject) {
                 try {
                     that.utils.request(config, data, function (res) {

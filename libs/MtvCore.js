@@ -219,7 +219,7 @@ MtvCore.keyController = {
     },
     /**
      * 切换Zone
-     * @param zoomId 指定zone为CurrentZone （可选）
+     * @param zoomId 指定zone为CurrentZone （必选）
      * @param currentIndex 设置目标zone选中的Item的index （可选）
      */
     changeZone(zoomId,currentIndex){
