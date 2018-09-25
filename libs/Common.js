@@ -34,6 +34,7 @@ const Common = {
             COMMONEVENT_MORETV_USERMESSAGE: 20,   //查询电视猫会员信息               (电视猫 3.1.7)
             COMMONEVENT_WHALEY_USERMESSAGE: 1004,//查询微鲸会员信息(ota19)
             COMMONEVENT_LOGINSTATUS: 21,  //查询登录状态                (电视猫 3.1.7)
+            COMMONEVENT_MORETV_MAC_ADDRESS: 22,  //获取电视猫MAC地址                (电视猫 4.0.1)
             EXTERBALJUMP: 400, //外部跳转                          (微鲸 ota19)
             EXEC_PLAYMUSIC: 1,
             EXEC_PAUSEMUSIC: 2,
@@ -914,28 +915,6 @@ const Common = {
             };
             loopLoad(pathArr[counter]);
         },
-        preLoadImg: function (imgEle, url, load) {
-            var img = new Image();
-            img.onload = function () {
-                Common.log.log('success preLoadImg: ' + url);
-                imgEle.previousElementSibling.style.display = 'none';
-                imgEle.src = url;
-                load && load.call(imgEle, img);
-            };
-            img.onerror = function () {
-                Common.log.log('error preLoadImg: ' + url);
-                var imgid = Math.random(),
-                    frameid = 'frameimg' + imgid;
-                window['img' + imgid] = '<img style="position:absolute;top:0;left:0;" width="100%" height="100%" id="img" src=\'' + this.src + '?kilobug\' />';
-                var htmlStr = '<iframe id="' + frameid + '" src="javascript:parent[\'img' + imgid + '\'];" frameBorder="0" scrolling="no" width="100%" height="100%"></iframe>';
-                if (imgEle.parentElement) {
-                    imgEle.previousElementSibling.style.display = 'none';
-                    imgEle.parentElement.innerHTML = htmlStr;
-                }
-            };
-            img.src = url;
-            return this;
-        },
         request: function (config, data, success, fail, timeout, count) {
             console.log('request url ' + config.url);
             console.log('request data ' + (data && JSON.stringify(data)));
@@ -994,6 +973,10 @@ const Common = {
                 }
             })
         },
+        setInterval(fun,time){
+
+
+        }
     },
     browser: {
         versions: function () {
@@ -1021,39 +1004,8 @@ const Common = {
         log: function (msg, type, _android) {
             var that = this;
             var time = new Date();
-            if (!type) {
-                type = that.type.Info.type;
-            }
-            switch (type) {
-                case that.type.Info.type:
-                    console.log(Common.utils.dateFormat(time, 'yyyy-MM-dd hh:mm:ss:ll') + ' ' + that.type.Info.prefix + msg);
-                    if (_android) {
-                        try {
-                            Common.android.log(Common.utils.dateFormat(time, 'yyyy-MM-dd hh:mm:ss:ll') + ' Android ' + that.type.Info.prefix + msg);
-                        } catch (e) {
-                        }
-                    }
-                    break;
-                case that.type.Debug.type:
-                    console.log(Common.utils.dateFormat(time, 'yyyy-MM-dd hh:mm:ss:ll') + ' ' + that.type.Debug.prefix + msg);
-                    if (_android) {
-                        try {
-                            Common.android.log(Common.utils.dateFormat(time, 'yyyy-MM-dd hh:mm:ss:ll') + ' Android ' + that.type.Debug.prefix + msg);
-                        } catch (e) {
-                        }
-                    }
-                    break;
-                case that.type.Error.type:
-                    console.log(Common.utils.dateFormat(time, 'yyyy-MM-dd hh:mm:ss:ll') + ' ' + that.type.Error.prefix + msg);
-                    if (_android) {
-                        try {
-                            Common.android.log(Common.utils.dateFormat(time, 'yyyy-MM-dd hh:mm:ss:ll') + ' Android ' + that.type.Error.prefix + msg);
-                        } catch (e) {
-                        }
-                    }
-                    break;
-            }
-            ;
+            console.log(Common.utils.dateFormat(time, 'yyyy-MM-dd HH:mm:ss:ll') + ' ' + that.type.Info.prefix + msg);
+
         }
     },
     base64: function () {
@@ -1157,136 +1109,7 @@ const Common = {
             return output;
         };
     },
-    jLink: function () {
-        this.active = 0;
-        this.link = [];
-        this.content = [];
-        this.setActive = function (_active) {
-            if (!isNaN(_active)) {
-                _active = parseInt(_active, 10);
-                var _size = this.content.length;
-                if (_active < 0) {
-                    _active = 0;
-                }
-                if (_active > _size - 1) {
-                    _active = 0;
-                }
-                this.active = _active;
-            }
-            return this;
-        };
-        this.getActive = function () {
-            return this.active;
-        };
-        this.setLink = function (_content) {
-            if (Object.prototype.toString.call(_content) === '[object Array]') {
-                var _size = _content.length;
-                if (_size <= 1) {
-                    this.link = [];
-                } else {
-                    this.link = _content;
-                }
-                this.active = 0;
-            }
-            return this;
-        };
-        this.getLink = function () {
-            return this.link;
-        };
-        this.setContent = function (_content) {
-            if (Object.prototype.toString.call(_content) === '[object Array]') {
-                var _size = _content.length;
-                if (_size <= 1) {
-                    this.content = [];
-                } else {
-                    this.content = _content;
-                }
-                this.active = 0;
-            }
-            return this;
-        };
-        this.getContent = function () {
-            return this.content;
-        };
-        this.refresh = function (_callback) {
-            var _active = this.active;
-            var _content = this.content;
-            var _size = _content.length;
-            if (Object.prototype.toString.call(_content) !== '[object Array]' || _size <= 2) {
-                if (_size == 2) {
-                    if (_active == 0) {
-                        this.link = [this.content[0], this.content[1]];
-                    } else {
-                        this.link = [this.content[1], this.content[0]];
-                    }
-                } else {
-                    this.link = [];
-                }
-            } else {
-                //数组长度为奇数
-                if (_size % 2 != 0) {
-                    var _per_side_num = (_size - 1) / 2;
-                    //当前索引超过数组一半
-                    if ((_active + _per_side_num) > (_size - 1)) {
-                        var _temp = [];
-                        var _start = _per_side_num - (_size - _active - 1);
-                        for (var x = _start; x < _size; x++) {
-                            _temp.push(_content[x]);
-                        }
-                        for (var y = 0; y < _start; y++) {
-                            _temp.push(_content[y]);
-                        }
-                        this.link = _temp;
-                        //当前索引正好在数组一半位置，左右个数正好相等
-                    } else if ((_active + _per_side_num) == (_size - 1)) {
-                        this.link = this.content;
-                        //当前索引未超过数组一半
-                    } else {
-                        var _temp = [];
-                        var _end = _active + _per_side_num + 1;
-                        for (var x = 0; x < _end; x++) {
-                            _temp.push(_content[x]);
-                        }
-                        for (var y = _size - 1; y >= _end; y--) {
-                            _temp.unshift(_content[y]);
-                        }
-                        this.link = _temp;
-                    }
-                    //数组长度为偶数(默认约定前一半比后一半多一个)
-                } else {
-                    var _right_side_num = _size / 2;
-                    var _left_side_num = _right_side_num - 1;
-                    //当前索引超过数组一半
-                    if ((_active + _right_side_num) > (_size - 1)) {
-                        var _temp = [];
-                        var _start = _right_side_num - (_size - _active - 1);
-                        for (var x = _start; x < _size; x++) {
-                            _temp.push(_content[x]);
-                        }
-                        for (var y = 0; y < _start; y++) {
-                            _temp.push(_content[y]);
-                        }
-                        this.link = _temp;
-                        //当前索引正好在数组一半位置，左右个数正好相等
-                    } else if ((_active + _right_side_num) == (_size - 1)) {
-                        this.link = this.content;
-                        //当前索引未超过数组一半
-                    } else {
-                        var _temp = [];
-                        var _end = _active + _right_side_num + 1;
-                        for (var x = 0; x < _end; x++) {
-                            _temp.push(_content[x]);
-                        }
-                        for (var y = _size - 1; y >= _end; y--) {
-                            _temp.unshift(_content[y]);
-                        }
-                        this.link = _temp;
-                    }
-                }
-            }
-            _callback && _callback(this);
-            return this;
-        }
-    }
-}
+
+
+};
 export default Common;
