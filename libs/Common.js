@@ -23,7 +23,7 @@ const Common = {
             COMMONEVENT_ACCESSTOKEN: 10,//帐号系统登录成功后下发的鉴权凭证    (微鲸 ota16)
             COMMONEVENT_UPGRADE: 12,//获取当前设备可升级的版本   (微鲸 ota19 电视猫3.1.6)
             COMMONEVENT_WUI: 14,//获取当前WUI   (微鲸 ota19)
-            COMMONEVENT_MORETV_MAC: 7,//获取当前设备MAC地址             (电视猫)
+            COMMONEVENT_MORETV_MAC_ID: 7,//获取当前设备MAC地址             (电视猫)
             COMMONEVENT_IP: 13,//获取当前ip                            (电视猫3.1.6  微鲸 ota21)
             COMMONEVENT_OS: 14,//获取当前设备操作系统信息，0代表安卓系统   (电视猫3.1.6)
             COMMONEVENT_WHALEY_OS: 18,// 获取当前设备操作系统信息，0代表安卓系统   (微鲸 ota21)
@@ -113,7 +113,7 @@ const Common = {
         },
         getUserId: function () {
             var that = this;
-            var user_id = that.getCommonInfo(that.type.COMMONEVENT_MORETV_MAC);
+            var user_id = that.getCommonInfo(that.type.COMMONEVENT_MORETV_MAC_ID);
             if (user_id) {
                 return user_id;
             } else {
@@ -247,17 +247,27 @@ const Common = {
             WEB_PLAYEVENT_GET: {
                 INFO_CUR_PLAYTIME: 1,//视频当前播放时长
                 INFO_TOTAL_PLAYTIME: 2,//视频的总时长
-                INFO_SCALE_MODE: 3//当前播放窗口模式
+                INFO_SCALE_MODE: 3,//当前播放窗口模式
+                INFO_SHOW_HIDE: 4,//404新增当前播放窗口显示隐藏:0:显示,1:隐藏,2:隐藏有声音
+                INFO_LAYER_MODE: 5//404新增当前播放窗口层级:0:小窗在上层,1:小窗在下层
             },
             WEB_PLAYEVENT_EXEC: {
-                TRAILER_LOCATION: 1,    //定位小窗位置，确定小窗大小
+                TRAILER_LOCATION: 1,    //定位小窗位置，确定小窗大小 404开始支持播放中调整大小及位置
                 TRAILER_STARTPLAY: 2,   //起播，播放指定节目
                 TRAILER_PAUSE: 3,		 //暂停
                 TRAILER_RESUME: 4,		 //恢复播放
                 TRAILER_SEEK: 5,		 //进度跳转
                 TRAILER_SCALE_LARGE: 6, //小窗->全屏
                 TRAILER_SCALE_SMALL: 7, //全屏->小窗
-                TRAILER_STOPPLAY: 8    //停止播放
+                TRAILER_STOPPLAY: 8,    //停止播放
+                TRAILER_SHOW: 0,    //404新增显示小窗
+                TRAILER_HIDE: 1,    //404新增隐藏小窗无声音
+                TRAILER_HIDE_VOICE: 2,    //404新增隐藏小窗有声音
+                TRAILER_TYPE: 200,//404新增直播等播放类型支持
+                TRAILER_SHOW_HIDE: 201,//404新增小窗隐藏显示
+                TRAILER_LAYER: 202,//404新增小窗层级调整
+                TRAILER_LAYER_UP: 0,//404新增小窗置于上层
+                TRAILER_LAYER_DOWN: 1,//404新增小窗置于下层
             },
             getPlayInfo: function (info_type) {
                 Common.android.log('android.playController.getPlayInfo(' + info_type + ')');
@@ -278,6 +288,14 @@ const Common = {
             getPlayMode: function () {
                 Common.android.log('android.playController.getPlayMode()');
                 return this.getPlayInfo(this.WEB_PLAYEVENT_GET.INFO_SCALE_MODE);
+            },
+            getPlayLayer: function () {
+                Common.android.log('android.playController.getPlayLayer()');
+                return this.getPlayInfo(this.WEB_PLAYEVENT_GET.INFO_LAYER_MODE);
+            },
+            getPlayShowStatus: function () {
+                Common.android.log('android.playController.getPlayShowStatus()');
+                return this.getPlayInfo(this.WEB_PLAYEVENT_GET.INFO_SHOW_HIDE);
             },
             execPlayEvent: function (event, value) {
                 Common.android.log('android.playController.execPlayEvent(' + event + ',' + value + ')');
@@ -306,6 +324,39 @@ const Common = {
             setFullScreen: function () {
                 Common.android.log('android.playController.smallWin()');
                 this.execPlayEvent(this.WEB_PLAYEVENT_EXEC.TRAILER_SCALE_LARGE);
+            },
+            /**
+             *  2.1 普通直播:sid=5hxzp8stuwa2&contentType=live
+             2.2 体育直播:sid=5hxzp8stuwa2&contentType=sportlive
+             2.3 网络直播:sid=5hxzp8stuwa2&contentType=webcast
+             2.4 轮播:  sid=5hxzp8stuwa2&contentType=cyclelive
+             3.1 直接播放地址 sid=vxhi7oc3kle5&playUrlList={"imgUrl":"","playUrl":"http%3A%2F%2Fbpic.wotucdn.com%2F17%2F80%2F83%2F98bOOOPIC78.mp4","title":"%E6%B5%8B%E8%AF%95%E8%A7%86%E9%A2%91%E5%9C%B0%E5%9D%8011","source":"12"};{"imgUrl":"","playUrl":"http%3A%2F%2Fbpic.wotucdn.com%2F16%2F95%2F30%2F86bOOOPICea.mp4","title":"%E6%B5%8B%E8%AF%95%E8%A7%86%E9%A2%91%E5%9C%B0%E5%9D%8022","source":"12"}
+             ** sid、source、playUrl必传， imgUrl , playUrl, title 的值需要使用urlencode
+             * @param value
+             */
+            livePlay:function(value){
+                Common.android.log('android.playController.livePlay()');
+                this.execPlayEvent(this.WEB_PLAYEVENT_EXEC.TRAILER_TYPE,value);
+            },
+            setLayerUp(){
+                Common.android.log('android.playController.setLayerUp()');
+                this.execPlayEvent(this.WEB_PLAYEVENT_EXEC.TRAILER_LAYER,this.WEB_PLAYEVENT_EXEC.TRAILER_LAYER_UP);
+            },
+            setLayerDown(){
+                Common.android.log('android.playController.setLayerDown()');
+                this.execPlayEvent(this.WEB_PLAYEVENT_EXEC.TRAILER_LAYER,this.WEB_PLAYEVENT_EXEC.TRAILER_LAYER_DOWN);
+            },
+            showPlayWin(){
+                Common.android.log('android.playController.showPlayWin()');
+                this.execPlayEvent(this.WEB_PLAYEVENT_EXEC.TRAILER_SHOW_HIDE,this.WEB_PLAYEVENT_EXEC.TRAILER_SHOW);
+            },
+            hidePlayWin(){
+                Common.android.log('android.playController.hidePlayWin()');
+                this.execPlayEvent(this.WEB_PLAYEVENT_EXEC.TRAILER_SHOW_HIDE,this.WEB_PLAYEVENT_EXEC.TRAILER_HIDE);
+            },
+            hidePlayWinWithVoice(){
+                Common.android.log('android.playController.hidePlayWinWithVoice()');
+                this.execPlayEvent(this.WEB_PLAYEVENT_EXEC.TRAILER_SHOW_HIDE,this.WEB_PLAYEVENT_EXEC.TRAILER_HIDE_VOICE);
             },
             winPlay: function (play_obj) {
                 Common.android.log('android.playController.winPlay(' + play_obj + ')');
