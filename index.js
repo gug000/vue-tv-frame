@@ -4,7 +4,7 @@
 // Vue.use(FocVue)
 'use strict'
 import './libs/Interface'
-import common from './libs/Common'
+import Utils from './libs/Utils'
 import MtvCore from './libs/MtvCore'
-exports.common = common
+exports.common = Utils
 exports.MtvCore = MtvCore

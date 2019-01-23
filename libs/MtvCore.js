@@ -1,4 +1,4 @@
-import Common from './Common';
+// import Common from './Common';
 
 let MtvCore = {
     vm:null,
@@ -52,11 +52,15 @@ let MtvCore = {
      * @param value
      */
     createItem(value) {
-        const domId = Common.utils.uuid(9);
-        const itemId = 'item_' + domId;
+        // const domId = Common.utils.uuid(9);
+        // const itemId = 'item_' + domId;
+        const itemId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
         this.Item[itemId] = {
             id: itemId,
-            domId: domId,
+            // domId: domId,
             zone: this,
             value: value || null
         };
@@ -93,10 +97,20 @@ let MtvCore = {
      * @param value
      */
     execCommonEvent(event_type, value){
-        if(this.vm){
+        if(this.vm && this.vm.execCommonEvent){
             this.vm.execCommonEvent(event_type, value)
         }
-    }
+    },
+    onWebViewFocusChanged(gainFocus,direction){
+        if(this.vm && this.vm.onWebViewFocusChanged){
+            this.vm.onWebViewFocusChanged(gainFocus,direction)
+        }
+    },
+    onWebViewVisiable(visibility){
+        if(this.vm && this.vm.onWebViewVisiable){
+            this.vm.onWebViewVisiable(visibility)
+        }
+    },
 
 
 };

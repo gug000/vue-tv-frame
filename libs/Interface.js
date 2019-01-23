@@ -78,6 +78,21 @@ const Interface = {
         //         break;
         // }
     },
+    /**
+     * webview焦点变化时回调
+     * @param gainFocus 0:聚焦 , 1:失焦
+     * @param direction 聚焦方向
+     */
+    onWebViewFocusChanged(gainFocus,direction){
+        MtvCore.onWebViewFocusChanged(gainFocus,direction);
+    },
+    /**
+     * webview可见状态变化时回调
+     * @param visibility 0:可见 , 1:不可见
+     */
+    onWebViewVisiable(visibility){
+        MtvCore.onWebViewVisiable(visibility);
+    },
     init() {
         window.dispatchKeyEvent = this.dispatchKeyEvent;
         window.execCommonEvent = this.execCommonEvent;
