@@ -584,7 +584,7 @@ var Interface = {
 
     /**
      * webview可见状态变化时回调
-     * @param visibility 0:可见 , 1:不可见
+     * @param visibility  0:可见 , 1:不可见
      */
     onWebViewVisiable: function onWebViewVisiable(visibility) {
         __WEBPACK_IMPORTED_MODULE_0__MtvCore__["a" /* MtvCore */].onWebViewVisiable(visibility);
@@ -592,6 +592,8 @@ var Interface = {
     init: function init() {
         window.dispatchKeyEvent = this.dispatchKeyEvent;
         window.execCommonEvent = this.execCommonEvent;
+        window.onWebViewFocusChanged = this.onWebViewFocusChanged;
+        window.onWebViewVisiable = this.onWebViewVisiable;
         document.onkeydown = function (evt) {
             var KeyName = {
                 19: __WEBPACK_IMPORTED_MODULE_0__MtvCore__["c" /* keyController */].KeyName.Up,

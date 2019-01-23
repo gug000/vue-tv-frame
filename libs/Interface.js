@@ -88,7 +88,7 @@ const Interface = {
     },
     /**
      * webview可见状态变化时回调
-     * @param visibility 0:可见 , 1:不可见
+     * @param visibility  0:可见 , 1:不可见
      */
     onWebViewVisiable(visibility){
         MtvCore.onWebViewVisiable(visibility);
@@ -96,6 +96,8 @@ const Interface = {
     init() {
         window.dispatchKeyEvent = this.dispatchKeyEvent;
         window.execCommonEvent = this.execCommonEvent;
+        window.onWebViewFocusChanged = this.onWebViewFocusChanged;
+        window.onWebViewVisiable = this.onWebViewVisiable;
         document.onkeydown = function (evt) {
             var KeyName = {
                 19: keyController.KeyName.Up,
