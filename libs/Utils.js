@@ -885,6 +885,7 @@ const utils = {
         }
         $.ajax({
             type: method,
+            contentType:config.contentType?config.contentType:'application/x-www-form-urlencoded',
             url: config.cache ? config.url : (config.url.indexOf('?') > -1 ? config.url + '&_T=' + new Date().getTime() + this.uuid(8) : config.url + '?_T=' + new Date().getTime() + this.uuid(8)),
             // data to be added to query string:
             data: _data,

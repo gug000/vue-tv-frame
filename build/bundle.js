@@ -171,6 +171,26 @@ var MtvCore = {
             _loop(config);
         }
     },
+    resetZone: function resetZone(pageId, zoneId, row, column, count) {
+        var that = this;
+        if (that.Page[pageId]) {
+            if (!that.Page[pageId].Zone[zoneId]) {
+                that.Page[pageId].createZone(zoneId, {
+                    row: row,
+                    column: column,
+                    count: count,
+                    Left: '',
+                    Right: '',
+                    Up: '',
+                    Down: ''
+                });
+            }
+            that.Page[pageId].Zone[zoneId].Items = [];
+            for (var i = 0; i < count; i++) {
+                that.Page[pageId].Zone[zoneId].createItem();
+            }
+        }
+    },
 
     /**
      * Android执行的异步回调
@@ -474,16 +494,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__libs_Interface__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__libs_Utils__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__libs_MtvCore__ = __webpack_require__(0);
-// import Vue from 'vue'
-// import FocVue from './components/FocClass'
-// Vue.component(FocVue.name, FocVue);
-// Vue.use(FocVue)
 
 
 
 
 exports.common = __WEBPACK_IMPORTED_MODULE_1__libs_Utils__["a" /* default */]
 exports.MtvCore = __WEBPACK_IMPORTED_MODULE_2__libs_MtvCore__["b" /* default */]
+
+
+
+
 
 /***/ }),
 /* 2 */
@@ -1529,6 +1549,7 @@ var utils = {
         }
         $.ajax({
             type: method,
+            contentType: config.contentType ? config.contentType : 'application/x-www-form-urlencoded',
             url: config.cache ? config.url : config.url.indexOf('?') > -1 ? config.url + '&_T=' + new Date().getTime() + this.uuid(8) : config.url + '?_T=' + new Date().getTime() + this.uuid(8),
             // data to be added to query string:
             data: _data,
