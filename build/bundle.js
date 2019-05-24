@@ -512,9 +512,14 @@ exports.MtvCore = __WEBPACK_IMPORTED_MODULE_2__libs_MtvCore__["b" /* default */]
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MtvCore__ = __webpack_require__(0);
 
-
+var prevTs = 0;
 var Interface = {
     dispatchKeyEvent: function dispatchKeyEvent(event_type) {
+        var ct = new Date().getTime();
+        if (ct - prevTs < 200) {
+            return;
+        }
+        prevTs = ct;
         event_type = parseInt(event_type, 10);
         switch (event_type) {
             case 1:
