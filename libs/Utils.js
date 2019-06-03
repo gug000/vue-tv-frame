@@ -619,6 +619,10 @@ const md5 = {
     }
 };
 const utils = {
+    requestConfig:{
+        url:'',
+        ts:0
+    },
     dateFormat: function (date, formatStr) {
         /*
          函数：填充0字符
@@ -877,6 +881,13 @@ const utils = {
     },
     request (config, data, success, fail, timeout, count) {
         webLog('request url ' + config.url);
+        const cts = new Date().getTime();
+        if(config.url===this.requestConfig.url && cts-this.requestConfig.ts<200){
+            webLog('request too fast in 200ms ');
+            return
+        }
+        this.requestConfig.url=config.url;
+        this.requestConfig.ts=cts;
         webLog('request data ' + (data && JSON.stringify(data)));
         const method = (config.method || 'get').toUpperCase();
         let _data = data;
@@ -886,12 +897,12 @@ const utils = {
         $.ajax({
             type: method,
             contentType:config.contentType?config.contentType:'application/x-www-form-urlencoded',
-            url: config.cache ? config.url : (config.url.indexOf('?') > -1 ? config.url + '&_T=' + new Date().getTime() + this.uuid(8) : config.url + '?_T=' + new Date().getTime() + this.uuid(8)),
+            url: config.cache ? config.url : (config.url.indexOf('?') > -1 ? config.url + '&_T=' + cts +'_'+ this.uuid(8) : config.url + '?_T=' + cts +'_'+ this.uuid(8)),
             // data to be added to query string:
             data: _data,
             // type of data we are expecting in return:
             dataType: 'json',
-            timeout: config.time || 3000,
+            timeout: config.time || 5000,
             success (data) {
                 // webLog(data)
                 webLog('request url ' + config.url + ' success');
