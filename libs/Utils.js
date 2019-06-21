@@ -48,6 +48,8 @@ const android = {
         EXEC_PAGELAYOUT: 6,
         EXEC_PAGETITLE: 7,
         EXEC_BOXCONNECT: 8,
+        EXEC_APPINSTALL: 10,//407 获取应用安装情况
+        EXEC_WATCHTIME: 13,//407 获取观看时长
         EVENT_AUDIO_TEXT: 101,
         EVENT_LAYOUT_LEVEL: 102,
         EVENT_LAYOUT_BACK: 103,
