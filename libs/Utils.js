@@ -174,9 +174,9 @@ const android = {
 
         } else {
             if (whaley) {
-                this.execCommonEvent(that.type.EXEC_JUMPPAGE, 'page=' + page + '&sid=' + sid + '&contentType=' + contentType);
+                this.execCommonEvent(this.type.EXEC_JUMPPAGE, 'page=' + page + '&sid=' + sid + '&contentType=' + contentType);
             } else {
-                this.execCommonEvent(that.type.EXEC_JUMPPAGE, 'page=' + page + '%26sid=' + sid + '%26contentType=' + contentType);
+                this.execCommonEvent(this.type.EXEC_JUMPPAGE, 'page=' + page + '%26sid=' + sid + '%26contentType=' + contentType);
             }
 
         }
@@ -972,9 +972,6 @@ const getUseId = type => {
             default:
                 useId = getUid();
                 break;
-        }
-        if (!useId) {
-            useId = getUid();
         }
     }
     return useId;

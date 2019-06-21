@@ -1,12 +1,12 @@
 import {MtvCore,keyController} from './MtvCore'
-let prevTs = 0;
+let prevTs = 0
 const Interface = {
     dispatchKeyEvent(event_type) {
-        let ct = new Date().getTime();
+        let ct = new Date().getTime()
         if(ct-prevTs<200){
             return;
         }
-        prevTs = ct;
+        prevTs = ct
         event_type = parseInt(event_type, 10);
         switch (event_type) {
             case 1:

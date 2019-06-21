@@ -92,24 +92,24 @@ let MtvCore = {
         }
     },
     resetZone(pageId,zoneId,row,column,count){
-      let that = this;
-      if(that.Page[pageId]){
-          if(!that.Page[pageId].Zone[zoneId]){
-              that.Page[pageId].createZone(zoneId, {
-                  row: row,
-                  column: column,
-                  count: count,
-                  Left: '',
-                  Right: '',
-                  Up: '',
-                  Down: ''
-              })
-          }
-          that.Page[pageId].Zone[zoneId].Items = [];
-          for (let i = 0; i < count; i++) {
-              that.Page[pageId].Zone[zoneId].createItem();
-          }
-      }
+        let that = this;
+        if(that.Page[pageId]){
+            if(!that.Page[pageId].Zone[zoneId]){
+                that.Page[pageId].createZone(zoneId, {
+                    row: row,
+                    column: column,
+                    count: count,
+                    Left: '',
+                    Right: '',
+                    Up: '',
+                    Down: ''
+                })
+            }
+            that.Page[pageId].Zone[zoneId].Items = [];
+            for (let i = 0; i < count; i++) {
+                that.Page[pageId].Zone[zoneId].createItem();
+            }
+        }
     },
     /**
      * Android执行的异步回调
