@@ -882,6 +882,7 @@ const utils = {
         loopLoad(pathArr[counter]);
     },
     request (config, data, success, fail, timeout, count) {
+        const that = this;
         webLog('request url ' + config.url);
         const cts = new Date().getTime();
         if(config.url===this.requestConfig.url && !config.ignoreFast && cts-this.requestConfig.ts<200){
@@ -906,7 +907,6 @@ const utils = {
             dataType: 'json',
             timeout: config.time || 5000,
             success (data) {
-                // webLog(data)
                 webLog('request url ' + config.url + ' success');
                 try {
                     webLog('response data ' + JSON.stringify(data))
@@ -918,7 +918,7 @@ const utils = {
                 if (type === 'timeout' && config.retry) {
                     if (!count) {
                         webLog('request url ' + config.url + ' retry');
-                        this.request(config, data, success, fail, timeout, 1)
+                        that.request(config, data, success, fail, timeout, 1)
                     } else {
                         webLog('request url ' + config.url + ' timeout callback');
                         timeout && timeout();

@@ -1551,6 +1551,7 @@ var utils = {
         loopLoad(pathArr[counter]);
     },
     request: function request(config, data, _success, fail, timeout, count) {
+        var that = this;
         webLog('request url ' + config.url);
         var cts = new Date().getTime();
         if (config.url === this.requestConfig.url && !config.ignoreFast && cts - this.requestConfig.ts < 200) {
@@ -1575,7 +1576,6 @@ var utils = {
             dataType: 'json',
             timeout: config.time || 5000,
             success: function success(data) {
-                // webLog(data)
                 webLog('request url ' + config.url + ' success');
                 try {
                     webLog('response data ' + JSON.stringify(data));
@@ -1586,7 +1586,7 @@ var utils = {
                 if (type === 'timeout' && config.retry) {
                     if (!count) {
                         webLog('request url ' + config.url + ' retry');
-                        this.request(config, data, _success, fail, timeout, 1);
+                        that.request(config, data, _success, fail, timeout, 1);
                     } else {
                         webLog('request url ' + config.url + ' timeout callback');
                         timeout && timeout();
