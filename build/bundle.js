@@ -1663,9 +1663,9 @@ var getCommonParams = function getCommonParams(activityId, ts, secret) {
     } else {
         var id = getUseId();
         if (!secret) {
-            token = android.md5Encrypt(id + '_' + ts + '_');
+            token = android.md5Encrypt(id + ts);
         } else {
-            token = md5.hex_md5(id + '_' + ts + '_' + secret);
+            token = md5.hex_md5(id + ts + secret);
         }
         return {
             uid: id,
