@@ -894,8 +894,8 @@ const utils = {
         webLog('request data ' + (data && JSON.stringify(data)));
         const method = (config.method || 'get').toUpperCase();
         let _data = data;
-        if (method === 'POST') {
-            _data = data;
+        if (config.contentType === 'application/json') {
+            _data = JSON.stringify(data);
         }
         $.ajax({
             type: method,
@@ -978,22 +978,32 @@ const getUseId = type => {
     }
     return useId;
 };
-const getCommonParams = (ts,secret)=>{
-    const id = getUseId();
-    if(!secret){
-        return {
-            uid: id,
-            openId: id,
-            timestamp: ts,
-            token: android.md5Encrypt(id + ts)
+const getCommonParams = (activityId,ts,secret)=>{
+    let token = '';
+    if(activityId){
+        if(!secret){
+            token = android.md5Encrypt(activityId+'_' + ts+'_');
+        }else{
+            token = md5.hex_md5(activityId+'_' + ts+'_'+secret);
+        }
+        return{
+            activityId:activityId,
+            timestamp:ts,
+            signkey:token
         }
     }else{
+        const id = getUseId();
+        if(!secret){
+            token = android.md5Encrypt(id+'_' + ts+'_');
+        }else{
+            token = md5.hex_md5(id+'_' + ts+'_'+secret);
+        }
         return {
             uid: id,
             openId: id,
             timestamp: ts,
-            token: md5.hex_md5(id + ts + secret)
-        }
+            token: token
+        };
     }
 };
 const Common = {android,md5,utils,getUseId,getCommonParams};

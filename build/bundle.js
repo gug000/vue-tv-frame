@@ -1563,8 +1563,8 @@ var utils = {
         webLog('request data ' + (data && JSON.stringify(data)));
         var method = (config.method || 'get').toUpperCase();
         var _data = data;
-        if (method === 'POST') {
-            _data = data;
+        if (config.contentType === 'application/json') {
+            _data = JSON.stringify(data);
         }
         $.ajax({
             type: method,
@@ -1647,21 +1647,31 @@ var getUseId = function getUseId(type) {
     }
     return useId;
 };
-var getCommonParams = function getCommonParams(ts, secret) {
-    var id = getUseId();
-    if (!secret) {
+var getCommonParams = function getCommonParams(activityId, ts, secret) {
+    var token = '';
+    if (activityId) {
+        if (!secret) {
+            token = android.md5Encrypt(activityId + '_' + ts + '_');
+        } else {
+            token = md5.hex_md5(activityId + '_' + ts + '_' + secret);
+        }
         return {
-            uid: id,
-            openId: id,
+            activityId: activityId,
             timestamp: ts,
-            token: android.md5Encrypt(id + ts)
+            signkey: token
         };
     } else {
+        var id = getUseId();
+        if (!secret) {
+            token = android.md5Encrypt(id + '_' + ts + '_');
+        } else {
+            token = md5.hex_md5(id + '_' + ts + '_' + secret);
+        }
         return {
             uid: id,
             openId: id,
             timestamp: ts,
-            token: md5.hex_md5(id + ts + secret)
+            token: token
         };
     }
 };
