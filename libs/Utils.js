@@ -885,7 +885,7 @@ const utils = {
         const that = this;
         webLog('request url ' + config.url);
         const cts = new Date().getTime();
-        if(config.url===this.requestConfig.url && !config.ignoreFast && cts-this.requestConfig.ts<200){
+        if(config.url===this.requestConfig.url && config.ignoreFast && cts-this.requestConfig.ts<200){
             webLog('request too fast in 200ms ');
             return
         }
