@@ -75,20 +75,23 @@ let MtvCore = {
         for (let config in pageConfig) {
             let pageObj = pageConfig[config];
             let page = that.createPage(pageObj.id);
-            pageObj.zone_ids.forEach((zoneId, index) => {
-                let zone = page.createZone(zoneId, {
-                    row: pageObj.row[index],
-                    column: pageObj.column[index],
-                    count: pageObj.count[index],
-                    Left: pageObj.Left[index],
-                    Right: pageObj.Right[index],
-                    Up: pageObj.Up[index],
-                    Down: pageObj.Down[index]
-                });
-                for (let i = 0; i < pageObj.count[index]; i++) {
-                    zone.createItem();
+            for(let zoneKey in pageObj){
+                if(zoneKey!=='id'){
+                    let zoneConfig = pageObj[zoneKey];
+                    let zone = page.createZone(zoneKey, {
+                        row: zoneConfig.row,
+                        column: zoneConfig.column,
+                        count: zoneConfig.count,
+                        Left: zoneConfig.Left,
+                        Right: zoneConfig.Right,
+                        Up: zoneConfig.Up,
+                        Down: zoneConfig.Down
+                    });
+                    for (let i = 0; i < zoneConfig.count; i++) {
+                        zone.createItem();
+                    }
                 }
-            })
+            }
         }
     },
     resetZone(pageId,zoneId,row,column,count){

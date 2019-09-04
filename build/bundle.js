@@ -147,28 +147,26 @@ var MtvCore = {
     },
     initZone: function initZone(pageConfig) {
         var that = this;
-
-        var _loop = function _loop(config) {
+        for (var config in pageConfig) {
             var pageObj = pageConfig[config];
             var page = that.createPage(pageObj.id);
-            pageObj.zone_ids.forEach(function (zoneId, index) {
-                var zone = page.createZone(zoneId, {
-                    row: pageObj.row[index],
-                    column: pageObj.column[index],
-                    count: pageObj.count[index],
-                    Left: pageObj.Left[index],
-                    Right: pageObj.Right[index],
-                    Up: pageObj.Up[index],
-                    Down: pageObj.Down[index]
-                });
-                for (var i = 0; i < pageObj.count[index]; i++) {
-                    zone.createItem();
+            for (var zoneKey in pageObj) {
+                if (zoneKey !== 'id') {
+                    var zoneConfig = pageObj[zoneKey];
+                    var zone = page.createZone(zoneKey, {
+                        row: zoneConfig.row,
+                        column: zoneConfig.column,
+                        count: zoneConfig.count,
+                        Left: zoneConfig.Left,
+                        Right: zoneConfig.Right,
+                        Up: zoneConfig.Up,
+                        Down: zoneConfig.Down
+                    });
+                    for (var i = 0; i < zoneConfig.count; i++) {
+                        zone.createItem();
+                    }
                 }
-            });
-        };
-
-        for (var config in pageConfig) {
-            _loop(config);
+            }
         }
     },
     resetZone: function resetZone(pageId, zoneId, row, column, count) {
