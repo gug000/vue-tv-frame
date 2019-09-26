@@ -174,7 +174,9 @@ const android = {
                 this.execCommonEvent(this.type.EXEC_JUMPPAGE, 'page=' + page + '%26keyword=' + sid + '%26contentType=' + contentType + '%26flag=' + flag);
             }
 
-        } else {
+        } else if(page === 'home'){
+            this.execCommonEvent(this.type.EXEC_JUMPPAGE, 'page=home&siteCode=' + sid);
+        }else {
             if (whaley) {
                 this.execCommonEvent(this.type.EXEC_JUMPPAGE, 'page=' + page + '&sid=' + sid + '&contentType=' + contentType);
             } else {

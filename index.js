@@ -5,5 +5,3 @@ import MtvCore from './libs/MtvCore'
 exports.common = Utils
 exports.MtvCore = MtvCore
 
-
-

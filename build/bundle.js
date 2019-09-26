@@ -501,8 +501,6 @@ exports.MtvCore = __WEBPACK_IMPORTED_MODULE_2__libs_MtvCore__["b" /* default */]
 
 
 
-
-
 /***/ }),
 /* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -828,6 +826,8 @@ var android = {
             } else {
                 this.execCommonEvent(this.type.EXEC_JUMPPAGE, 'page=' + page + '%26keyword=' + sid + '%26contentType=' + contentType + '%26flag=' + flag);
             }
+        } else if (page === 'home') {
+            this.execCommonEvent(this.type.EXEC_JUMPPAGE, 'page=home&siteCode=' + sid);
         } else {
             if (whaley) {
                 this.execCommonEvent(this.type.EXEC_JUMPPAGE, 'page=' + page + '&sid=' + sid + '&contentType=' + contentType);
