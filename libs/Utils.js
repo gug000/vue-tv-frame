@@ -175,7 +175,7 @@ const android = {
             }
 
         } else if(page === 'home'){
-            this.execCommonEvent(this.type.EXEC_JUMPPAGE, 'page=home&siteCode=' + sid);
+            this.execCommonEvent(this.type.EXEC_JUMPPAGE, 'page=home%26siteCode=' + sid);
         }else {
             if (whaley) {
                 this.execCommonEvent(this.type.EXEC_JUMPPAGE, 'page=' + page + '&sid=' + sid + '&contentType=' + contentType);
