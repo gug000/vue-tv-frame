@@ -64,7 +64,7 @@ const android = {
         JUMPPAGE: {
             AccountHomePage: 'page=AccountHomePage', //电视猫页面跳转 - 会员中心页       (电视猫 3.1.7)
             TencentLoginPage: 'page=TencentLoginPage', //电视猫页面跳转 - 腾讯登录页     (电视猫 3.1.7)
-            TencentVipPage: 'page=TencentVipPage&entrance=H5&from=200&vipBid=90&cid=""&vid=""&pid=""&mid=""&extraParam=""' //电视猫页面跳转 - 腾讯商品购买页    (电视猫 3.1.7)
+            TencentVipPage: 'page=TencentVipPage&entrance=H5&from=200&vipBid=MTVIP&cid=&vid=&pid=&mid=&extraParam=""' //电视猫页面跳转 - 腾讯商品购买页    (电视猫 3.1.7)
         },
     },
     log(str) {
@@ -87,6 +87,9 @@ const android = {
     },
     execCommonEvent(event, value) {
         webLog('Android.execCommonEvent(' + event + ',' + value + ')');
+        if(!value){
+            value='';
+        }
         let return_str = '';
         try {
             return_str = Android.execCommonEvent(event, value);
