@@ -188,6 +188,12 @@ const android = {
 
         }
     },
+    gotoBuy(){
+        this.execCommonEvent(this.type.EXEC_JUMPPAGE, this.type.JUMPPAGE.TencentVipPage);
+    },
+    gotoLogin(){
+        this.execCommonEvent(this.type.EXEC_JUMPPAGE, this.type.JUMPPAGE.TencentLoginPage);
+    },
     /**
      * 播放音频文件
      * @param fullPath 音频文件绝对路径

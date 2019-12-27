@@ -839,6 +839,12 @@ var android = {
             }
         }
     },
+    gotoBuy: function gotoBuy() {
+        this.execCommonEvent(this.type.EXEC_JUMPPAGE, this.type.JUMPPAGE.TencentVipPage);
+    },
+    gotoLogin: function gotoLogin() {
+        this.execCommonEvent(this.type.EXEC_JUMPPAGE, this.type.JUMPPAGE.TencentLoginPage);
+    },
 
     /**
      * 播放音频文件
